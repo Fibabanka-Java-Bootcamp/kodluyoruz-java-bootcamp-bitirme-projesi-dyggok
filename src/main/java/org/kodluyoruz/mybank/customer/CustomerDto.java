@@ -4,6 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.kodluyoruz.mybank.creditcard.CreditCard;
+import org.kodluyoruz.mybank.depositaccount.DepositAccount;
+import org.kodluyoruz.mybank.savingsaccount.SavingsAccount;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;

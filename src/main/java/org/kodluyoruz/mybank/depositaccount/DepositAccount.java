@@ -29,15 +29,15 @@ public class DepositAccount {
 
     private String iban;
     private double accountBalance;
-
     private String currency;
-
-    @OneToOne(mappedBy = "depositAccount")
+    @JsonIgnore
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "customer_id",referencedColumnName = "id")
     private Customer customer;
-
-    @OneToOne(mappedBy = "depositAccount")
+    @JsonIgnore
+    @OneToOne(mappedBy = "depositAccount",cascade = CascadeType.ALL)
     private PrepaidCard prepaidCard;
-
+    @JsonIgnore
     @OneToMany(mappedBy = "depositAccount")
     List<Transfer> transfers;
 
@@ -47,6 +47,7 @@ public class DepositAccount {
                 .iban(this.iban)
                 .currency(this.currency)
                 .id(this.id)
+                .customer(this.customer)
                 .build();
     }
 

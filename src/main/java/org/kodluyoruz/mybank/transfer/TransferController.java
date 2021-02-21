@@ -33,7 +33,7 @@ public class TransferController {
     }
 
     @PostMapping("/betweenAccounts/{transferFrom}/{transferTo}")
-    public TransferDto create (@Valid @RequestBody TransferDto transferDto,@PathVariable String transferFrom,
+    public synchronized TransferDto create (@Valid @RequestBody TransferDto transferDto,@PathVariable String transferFrom,
                                @PathVariable String transferTo) {
         transferDto = transferService.create(transferDto.toTransfer()).toTransferDto();
 
@@ -84,7 +84,7 @@ public class TransferController {
     }
 
     @PostMapping("/toSomeoneElse/{transferFrom}/{transferTo}")
-    public TransferDto createtoSomeone (@Valid @RequestBody TransferDto transferDto,@PathVariable String transferFrom,
+    public synchronized TransferDto createtoSomeone (@Valid @RequestBody TransferDto transferDto,@PathVariable String transferFrom,
                                @PathVariable String transferTo) {
         transferDto = transferService.create(transferDto.toTransfer()).toTransferDto();
 
@@ -101,7 +101,7 @@ public class TransferController {
                     RetreivedRates rates = restTemplate.getForObject("/latest?base={base}&symbols={symbols}", RetreivedRates.class, parameters);
                     transferDto.setAmount((Double) rates.getRates().get(s1.getCurrency()) * transferDto.getAmount());
                 }
-                if (transferDto.getAmount() <= s1.getAccountBalance()) {
+                if (transferDto.getAmount() <= d.getAccountBalance()) {
                     d.setAccountBalance(d.getAccountBalance() - transfermoney);
                     s1.setAccountBalance(transferDto.getAmount() + s1.getAccountBalance());
                     depositAccountService.create(d);
@@ -118,7 +118,7 @@ public class TransferController {
                     RetreivedRates rates = restTemplate.getForObject("/latest?base={base}&symbols={symbols}", RetreivedRates.class, parameters);
                     transferDto.setAmount((Double) rates.getRates().get(d1.getCurrency()) * transferDto.getAmount());
                 }
-                if (transferDto.getAmount() <= d1.getAccountBalance()) {
+                if (transferDto.getAmount() <= d.getAccountBalance()) {
                     d.setAccountBalance(d.getAccountBalance() - transfermoney);
                     d1.setAccountBalance(transferDto.getAmount() + d1.getAccountBalance());
                     depositAccountService.create(d);

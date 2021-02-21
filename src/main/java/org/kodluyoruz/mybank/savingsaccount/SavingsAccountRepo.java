@@ -10,4 +10,5 @@ public interface SavingsAccountRepo extends CrudRepository<SavingsAccount, Integ
     SavingsAccount findByIban(String iban);
     SavingsAccount findById(int id);
     void deleteById(int id);
+    SavingsAccount findByCustomer_Id(int id);
 }

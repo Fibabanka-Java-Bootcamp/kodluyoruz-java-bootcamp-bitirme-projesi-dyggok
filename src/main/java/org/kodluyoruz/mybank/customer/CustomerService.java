@@ -19,7 +19,9 @@ public class CustomerService {
     public List<Customer> get(String firstname, String lastname){
         return customerRepo.findByFirstnameAndLastname(firstname,lastname);
     }
-
+    public Customer getPhone(String phone){
+        return customerRepo.findByPhone(phone);
+    }
     public void delete(int id){
         customerRepo.deleteById(id);
     }

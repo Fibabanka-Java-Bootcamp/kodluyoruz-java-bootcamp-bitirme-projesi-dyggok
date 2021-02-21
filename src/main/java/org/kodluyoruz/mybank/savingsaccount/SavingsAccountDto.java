@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.kodluyoruz.mybank.customer.Customer;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -16,12 +17,12 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SavingsAccountDto {
-    private UUID id;
+    private int id;
     @Pattern(regexp = "^TR\\d{7}[0-9A-Z]{17}$")
     private String iban;
     private double accountBalance;
-
     private String currency;
+    private Customer customer;
 
     public SavingsAccount toSavingsAccount(){
         return SavingsAccount.builder()
@@ -29,6 +30,7 @@ public class SavingsAccountDto {
                 .currency(this.currency)
                 .id(this.id)
                 .iban(this.iban)
+                .customer(this.customer)
                 .build();
     }
 

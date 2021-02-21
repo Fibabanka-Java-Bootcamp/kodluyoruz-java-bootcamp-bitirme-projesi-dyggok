@@ -10,6 +10,7 @@ import java.util.UUID;
 
 public interface CustomerRepo extends CrudRepository<Customer, Integer> {
     List<Customer> findByFirstnameAndLastname(String firstname, String lastname);
+    Customer findByPhone(String phone);
     Customer findById(int id);
     Customer deleteById(int id);
     Customer findCustomerBySavingsAccount(SavingsAccount savingsAccount);

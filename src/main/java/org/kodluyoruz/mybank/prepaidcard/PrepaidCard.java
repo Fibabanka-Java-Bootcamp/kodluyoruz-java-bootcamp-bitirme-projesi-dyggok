@@ -1,5 +1,6 @@
 package org.kodluyoruz.mybank.prepaidcard;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.kodluyoruz.mybank.depositaccount.DepositAccount;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,11 +22,12 @@ public class PrepaidCard {
     @GeneratedValue
     private int id;
 
-    private long card_no;
+    private String card_no;
 
-    private int cvv;
+    private String cvv;
 
-    @OneToOne(fetch = FetchType.EAGER)
+
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "depositaccount_id",referencedColumnName = "id")
     private DepositAccount depositAccount;
 
@@ -34,6 +36,7 @@ public class PrepaidCard {
                 .id(this.id)
                 .card_no(this.card_no)
                 .cvv(this.cvv)
+                .depositAccount(this.depositAccount)
                 .build();
     }
 

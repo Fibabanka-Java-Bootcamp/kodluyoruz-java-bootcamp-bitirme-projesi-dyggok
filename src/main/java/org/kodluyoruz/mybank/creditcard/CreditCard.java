@@ -1,5 +1,6 @@
 package org.kodluyoruz.mybank.creditcard;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.kodluyoruz.mybank.customer.Customer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,7 +26,7 @@ public class CreditCard {
 
     private double debt;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "customer_id",referencedColumnName = "id")
     private Customer customer;
 
@@ -35,6 +36,7 @@ public class CreditCard {
                 .card_no(this.card_no)
                 .cvv(this.cvv)
                 .debt(this.debt)
+                .customer(this.customer)
                 .build();
     }
 

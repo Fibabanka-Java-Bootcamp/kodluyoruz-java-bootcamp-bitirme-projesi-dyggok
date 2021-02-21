@@ -1,5 +1,9 @@
 package org.kodluyoruz.mybank.customer;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.kodluyoruz.mybank.creditcard.CreditCard;
 import org.kodluyoruz.mybank.depositaccount.DepositAccount;
 import org.kodluyoruz.mybank.savingsaccount.SavingsAccount;
@@ -25,16 +29,17 @@ public class Customer {
     private String phone;
     private String email;
 
-    @OneToOne
-    @JoinColumn(name = "savingsaccount_id",referencedColumnName = "id")
+    @JsonIgnore
+    @OneToOne(mappedBy = "customer",cascade = CascadeType.ALL)
     private SavingsAccount savingsAccount;
 
-    @OneToOne
-    @JoinColumn(name = "depositaccount_id",referencedColumnName = "id")
+    @JsonIgnore
+    @OneToOne(mappedBy = "customer",cascade = CascadeType.ALL)
     private DepositAccount depositAccount;
 
-    @OneToOne(mappedBy = "customer")
-    private CreditCard creditCards;
+    @JsonIgnore
+    @OneToOne(mappedBy = "customer",cascade = CascadeType.ALL)
+    private CreditCard creditCard;
 
     public CustomerDto toCustomerDto(){
         return CustomerDto.builder()
@@ -42,6 +47,7 @@ public class Customer {
                 .firstname(this.firstname)
                 .lastname(this.lastname)
                 .phone(this.phone)
+                .email(this.email)
                 .build();
     }
 }

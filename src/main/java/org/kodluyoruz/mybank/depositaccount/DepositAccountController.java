@@ -1,5 +1,7 @@
 package org.kodluyoruz.mybank.depositaccount;
 
+import org.kodluyoruz.mybank.customer.CustomerRepo;
+import org.kodluyoruz.mybank.customer.CustomerService;
 import org.kodluyoruz.mybank.savingsaccount.SavingsAccount;
 import org.kodluyoruz.mybank.savingsaccount.SavingsAccountDto;
 import org.kodluyoruz.mybank.savingsaccount.SavingsAccountService;
@@ -19,16 +21,21 @@ import java.util.UUID;
 public class DepositAccountController {
 
     private final DepositAccountService depositAccountService;
+    private final CustomerService customerService;
 
-    public DepositAccountController(DepositAccountService depositAccountService) {
+    public DepositAccountController(DepositAccountService depositAccountService,
+                                    CustomerService customerService) {
         this.depositAccountService = depositAccountService;
+        this.customerService = customerService;
     }
 
     @PostMapping
     public DepositAccountDto create(@Valid @RequestBody DepositAccountDto depositAccountDto){
+       
         return depositAccountService
-                .create(depositAccountDto.toDepositAccount())
-                .toDepositAccountDto();
+                    .create(depositAccountDto.toDepositAccount())
+                    .toDepositAccountDto();
+
     }
 
     @DeleteMapping("/{id}")
@@ -38,7 +45,7 @@ public class DepositAccountController {
             if (d.getAccountBalance() == 0) {
                 depositAccountService.delete(id);
             } else {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN,
                         "The account cannot be deleted : " + id);
             }
         }catch (Exception e){

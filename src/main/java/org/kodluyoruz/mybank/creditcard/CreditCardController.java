@@ -10,6 +10,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+
 import javax.validation.Valid;
 import java.util.UUID;
 
@@ -36,7 +37,7 @@ public class CreditCardController {
                 .toCreditCardDto();
     }
     @GetMapping("/{id}/withAccounts/{iban}/money/{money}")
-    public CreditCardDto debtOnAccount(@PathVariable int id,@PathVariable String iban, @PathVariable double money) {
+    public boolean debtOnAccount(@PathVariable int id,@PathVariable String iban, @PathVariable double money) {
         CreditCard creditCards = creditCardService.get(id);
         if (savingsAccountService.get(iban) != null) {
             SavingsAccount savingsAccount = savingsAccountService.get(iban);
@@ -55,24 +56,19 @@ public class CreditCardController {
             DepositAccount depositAccount = depositAccountService.get(iban);
             if (depositAccount.getAccountBalance() >= money) {
                 double mn = depositAccount.getAccountBalance() - money;
-                if (creditCards.getDebt() >= money) {
-                    double remainingDebt = creditCards.getDebt() - money;
-                    creditCards.setDebt(remainingDebt);
-                } else {
-                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You entered too much money");
-                }
+                double remainingDebt = creditCards.getDebt() - money;
+                creditCards.setDebt(remainingDebt);
                 depositAccount.setAccountBalance(mn);
                 depositAccountService.create(depositAccount);
-
             } else {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Insufficient balance");
             }
         }
-        return null;
+        return true;
     }
 
     @GetMapping("/{id}/withAtm/{money}")
-    public void debtViaAtm(@PathVariable int id, @PathVariable double money){
+    public boolean debtViaAtm(@PathVariable int id, @PathVariable double money){
         try {
             CreditCard creditCard = creditCardService.get(id);
             double remainingDebt = creditCard.getDebt() + money;
@@ -82,6 +78,7 @@ public class CreditCardController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                     "Credit card not be found"+id);
         }
+        return Boolean.TRUE;
     }
 
     @GetMapping("/{id}/debtInquiry")
@@ -91,7 +88,7 @@ public class CreditCardController {
     }
 
     @GetMapping("/{id}/withDrawal")
-    public void shopping(@PathVariable int id, @PathVariable double money){
+    public boolean shopping(@PathVariable int id, @PathVariable double money){
         try {
             CreditCard creditCard = creditCardService.get(id);
             double remainingDebt = creditCard.getDebt() - money;
@@ -101,6 +98,7 @@ public class CreditCardController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                     "Credit card not be found"+id);
         }
+        return Boolean.TRUE;
     }
 
 }

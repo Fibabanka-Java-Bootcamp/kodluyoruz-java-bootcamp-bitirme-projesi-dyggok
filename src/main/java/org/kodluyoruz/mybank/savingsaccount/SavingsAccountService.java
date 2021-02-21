@@ -26,4 +26,5 @@ public class SavingsAccountService {
         savingsAccountRepo
                 .deleteById(id);
     }
+    public SavingsAccount getByCus(int id){return savingsAccountRepo.findByCustomer_Id(id);}
 }

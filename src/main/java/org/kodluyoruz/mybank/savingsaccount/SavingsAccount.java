@@ -27,7 +27,7 @@ import java.util.UUID;
 public class SavingsAccount {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID id;
+    private int id;
 
     @GeneratedValue(strategy = GenerationType.AUTO)
     private String iban;
@@ -36,7 +36,8 @@ public class SavingsAccount {
 
     private String currency;
 
-    @OneToOne(mappedBy = "savingsAccount")
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "customer_id",referencedColumnName = "id")
     private Customer customer;
 
     @OneToMany(mappedBy = "savingsAccount")
@@ -48,6 +49,7 @@ public class SavingsAccount {
                 .currency(this.currency)
                 .id(this.id)
                 .iban(this.iban)
+                .customer(this.customer)
                 .build();
     }
 }

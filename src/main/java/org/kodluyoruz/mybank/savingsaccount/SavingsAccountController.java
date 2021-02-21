@@ -35,10 +35,12 @@ public class SavingsAccountController {
             if(s.getAccountBalance() == 0){
                 savingsAccountService.delete(id);
             }else {
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "The account cannot be deleted : " + id);
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                        "The account cannot be deleted : " + id);
             }
         }catch(Exception e){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"The Account cannot be found" +id);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "The Account cannot be found" +id);
         }
 
         Map<String, Boolean> response = new HashMap<>();

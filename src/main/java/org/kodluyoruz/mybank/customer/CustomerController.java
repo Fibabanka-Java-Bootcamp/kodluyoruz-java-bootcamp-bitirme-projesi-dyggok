@@ -1,5 +1,7 @@
 package org.kodluyoruz.mybank.customer;
 
+import org.kodluyoruz.mybank.depositaccount.DepositAccountService;
+import org.kodluyoruz.mybank.savingsaccount.SavingsAccountService;
 import org.springframework.web.bind.annotation.RestController;
 
 import org.kodluyoruz.mybank.creditcard.CreditCard;
@@ -22,14 +24,18 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/customer")
 public class CustomerController {
     private final CustomerService customerService;
+    private final DepositAccountService depositAccountService;
+    private final SavingsAccountService savingsAccountService;
 
-    public CustomerController(CustomerService customerService) {
+    public CustomerController(CustomerService customerService, DepositAccountService depositAccountService,
+                              SavingsAccountService savingsAccountService) {
         this.customerService = customerService;
+        this.depositAccountService = depositAccountService;
+        this.savingsAccountService = savingsAccountService;
     }
 
     @PostMapping
     public CustomerDto create(@Valid @RequestBody CustomerDto customerDto){
-        Customer customer = new Customer();
         return customerService
                 .create(customerDto.toCustomer())
                 .toCustomerDto();
@@ -47,21 +53,34 @@ public class CustomerController {
     public Map<String, Boolean> deleteCustomer(@PathVariable(value = "id") int id){
         try {
             Customer c1 = customerService.get(id);
-            DepositAccount d1 = c1.getDepositAccount();
-            SavingsAccount s1 = c1.getSavingsAccount();
-            CreditCard creditCard = c1.getCreditCards();
-            if (d1 == null && s1 == null && creditCard == null) {
+            DepositAccount d1 = depositAccountService.getByCus(id);
+            SavingsAccount s1 = savingsAccountService.getByCus(id);
+            CreditCard card = c1.getCreditCard();
+            if (d1 !=null) {
+                if(d1.getAccountBalance() !=0) {
+                    throw new ResponseStatusException(HttpStatus.FORBIDDEN, "The Customer cannot be deleted");
+                }
+            }
+            if(s1 !=null) {
+                if(s1.getAccountBalance() !=0) {
+                    throw new ResponseStatusException(HttpStatus.FORBIDDEN, "The Customer cannot be deleted");
+                }
+            }
+            if(card !=null){
+                if(card.getDebt()<0){
+                    throw new ResponseStatusException(HttpStatus.FORBIDDEN, "The Customer cannot be deleted");
+                }
+            }
+            else{
                 customerService.delete(id);
                 Map<String, Boolean> response = new HashMap<>();
                 response.put("deleted", Boolean.TRUE);
                 return response;
-            }else if (d1.getAccountBalance() != 0 || s1.getAccountBalance() != 0 || creditCard.getDebt() != 0) {
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "The Customer cannot be deleted");
             }
         }catch (NullPointerException e){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer cannot be found"+id);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not be found" +id);
         }
-        return null;
+    return null;
     }
 }
 
